@@ -1,4 +1,4 @@
-package com.douglas.nutrisimples.model;
+package com.douglas.nutrisimples.domain;
 
 import java.math.BigDecimal;
 
@@ -7,6 +7,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -25,8 +30,18 @@ public class Product {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@NotBlank(message = "Please enter the product name!")
+	@Size(min = 2, max = 80)
 	private String name;
+	
+	@NotNull(message = "Price is mandatory!")
+	@Positive(message = "The price must be greater than zero!")
 	private BigDecimal price;
+	
+	@PositiveOrZero(message = "The quantity must be greater than or equal to 0!")
 	private Integer amount;
+	
+	@Size(min = 10, max = 250)
 	private String description;
 }
