@@ -2,10 +2,13 @@ package com.douglas.nutrisimples.domain;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -44,4 +47,10 @@ public class Product {
 	
 	@Size(min = 10, max = 250)
 	private String description;
+	
+	@ManyToOne
+	@JsonIgnoreProperties("product")
+	private Classification classification;
+	
+	
 }
