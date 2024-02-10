@@ -5,58 +5,34 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
+@EqualsAndHashCode(of = "id")
 @Table(name = "tb_usuarios")
 public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String nome;
-	private String usuarioEmail;
-	private String senha;
 	
-	public User() {
-	}
-
-	public User(Long id, String nome, String usuarioEmail, String senha) {
-		super();
-		this.id = id;
-		this.nome = nome;
-		this.usuarioEmail = usuarioEmail;
-		this.senha = senha;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getNome() {
-		return nome;
-	}
-
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
-
-	public String getUsuarioEmail() {
-		return usuarioEmail;
-	}
-
-	public void setUsuarioEmail(String usuarioEmail) {
-		this.usuarioEmail = usuarioEmail;
-	}
-
-	public String getSenha() {
-		return senha;
-	}
-
-	public void setSenha(String senha) {
-		this.senha = senha;
-	}
+	@NotBlank(message = "O nome do usuário é obrigatório!")
+	@Size(min = 3, max = 90)
+	private String name;
+	
+	@NotBlank(message = "A senha é obrigatório!")
+	@Size(min = 6, max = 50)
+	private String email;
+	private String password;
+	
 }
