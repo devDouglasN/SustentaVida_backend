@@ -51,6 +51,5 @@ public class Product {
 	@ManyToOne
 	@JsonIgnoreProperties("product")
 	private Classification classification;
-	
-	
+		
 }
