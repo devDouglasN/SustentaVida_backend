@@ -28,4 +28,11 @@ public class ProductService {
 		Product newObj = new Product(objectDTO);
 	    return productRepository.save(newObj);
 	}
+	
+	public Product update(Long id, ProductDTO objectDTO) {
+	    Product obj = findById(id);
+	    obj.setName(objectDTO.getName());
+	    obj.setPrice(objectDTO.getPrice());
+	    return productRepository.save(obj);
+	}
 }
