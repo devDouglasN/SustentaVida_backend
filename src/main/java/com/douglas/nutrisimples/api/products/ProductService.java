@@ -22,4 +22,10 @@ public class ProductService {
 		Optional<Product> product = productRepository.findById(id);
 		return product.orElseThrow(() -> new RuntimeException("Object not found! ID:" + id));
 	}
+	
+	public Product create(ProductDTO objectDTO) {
+		objectDTO.setId(null);
+		Product newObj = new Product(objectDTO);
+	    return productRepository.save(newObj);
+	}
 }

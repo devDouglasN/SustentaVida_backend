@@ -2,6 +2,7 @@ package com.douglas.nutrisimples.domain;
 
 import java.math.BigDecimal;
 
+import com.douglas.nutrisimples.api.products.ProductDTO;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Entity;
@@ -51,5 +52,12 @@ public class Product {
 	@ManyToOne
 	@JsonIgnoreProperties("product")
 	private Classification classification;
-		
+	
+	public Product(ProductDTO objDTO) {
+		this.id = objDTO.getId();
+		this.name = objDTO.getName();
+		this.price = objDTO.getPrice();
+		this.amount = objDTO.getAmount();
+		this.description = objDTO.getDescription();
+	}	
 }
