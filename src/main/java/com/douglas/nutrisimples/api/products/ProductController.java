@@ -1,6 +1,8 @@
 package com.douglas.nutrisimples.api.products;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,12 @@ public class ProductController {
 		
 	@Autowired
 	public ProductService productService;
+	
+	public ResponseEntity<List<ProductDTO>> findall() {
+		List<Product> list = productService.findAll();
+		List<ProductDTO> listDto = list.stream().map(obj -> new ProductDTO(obj)).collect(Collectors.toList());
+	    return ResponseEntity.ok().body(listDto);
+	}
 
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<ProductDTO> findById(@PathVariable Long id) {
