@@ -24,4 +24,10 @@ public class UserController {
 		List<UserDTO> listDto = list.stream().map(obj -> new UserDTO(obj)).collect(Collectors.toList());
 	    return ResponseEntity.ok().body(listDto);
 	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<User> getById(@PathVariable Long id) {
+		User object = userService.findById(id);
+		return ResponseEntity.ok().body(object);
+	}
 }

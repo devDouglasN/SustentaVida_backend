@@ -16,4 +16,9 @@ public class UserService {
 	public List<User> findAll() {
 		return userRepository.findAll();
 	}
+
+	public User findById(Integer id) {
+		Optional<User> obj = userRepository.findById(id);
+		return obj.orElse(null);
+	}
 }
