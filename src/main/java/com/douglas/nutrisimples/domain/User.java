@@ -1,5 +1,7 @@
 package com.douglas.nutrisimples.domain;
 
+import com.douglas.nutrisimples.api.user.UserDTO;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,5 +36,12 @@ public class User {
 	@Size(min = 6, max = 50)
 	private String email;
 	private String password;
+	
+	public User(UserDTO objDTO) {
+		this.id = objDTO.getId();
+		this.name = objDTO.getName();
+		this.email = objDTO.getEmail();
+		this.password = objDTO.getPassword();
+	}
 		
 }
