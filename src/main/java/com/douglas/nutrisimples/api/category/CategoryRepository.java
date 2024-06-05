@@ -1,8 +1,8 @@
-package com.douglas.nutrisimples.api.classifications;
+package com.douglas.nutrisimples.api.category;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.douglas.nutrisimples.domain.Classification;
+import com.douglas.nutrisimples.domain.Category;
 
-public interface ClassificationRepository extends JpaRepository<Classification, Long>{
+public interface CategoryRepository extends JpaRepository<Category, Long>{
 }
