@@ -1,57 +1,52 @@
 package com.douglas.nutrisimples.api.user;
 
-import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.bind.annotation.*;
 
 import com.douglas.nutrisimples.domain.User;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/user")
-@CrossOrigin(origins = "", allowedHeaders = "")
+@RequestMapping("/usuarios")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UserController {
-	
-	@Autowired
-	public UserService userService;
-	
-	public ResponseEntity<List<UserDTO>> findall() {
-		List<User> list = userService.findAll();
-		List<UserDTO> listDto = list.stream().map(obj -> new UserDTO(obj)).collect(Collectors.toList());
-	    return ResponseEntity.ok().body(listDto);
-	}
 
-	@GetMapping("/{id}")
-	public ResponseEntity<User> getById(@PathVariable Long id) {
-		User object = userService.findById(id);
-		return ResponseEntity.ok().body(object);
-	}
-	
-	@PutMapping(value = "/{id}")
-	public ResponseEntity<UserDTO> update(@PathVariable Long id, @Valid @RequestBody UserDTO objDTO) {
-		User obj = userService.update(id, objDTO);
-		return ResponseEntity.ok().body(new UserDTO(obj));
-	}
+    @Autowired
+    private UserService userService;
 
-	
-	@PostMapping
-	public ResponseEntity<UserDTO> create(@RequestBody UserDTO objDTO) {
-		User newObj = userService.create(objDTO);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newObj.getId()).toUri();
-		return ResponseEntity.created(uri).build();
-	}
+    @GetMapping("/all")
+    public ResponseEntity<List<User>> getAll() {
+        return ResponseEntity.ok(userService.findAll());
+    }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getById(@PathVariable Long id) {
+        return userService.findById(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/cadastrar")
+    public ResponseEntity<User> postUser(@RequestBody @Valid User user) {
+        return userService.registerUser(user)
+            .map(resposta -> ResponseEntity.status(HttpStatus.CREATED).body(resposta))
+            .orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+    }
+
+    @PutMapping("/atualizar")
+    public ResponseEntity<User> putUser(@Valid @RequestBody User user) {
+        return userService.updateUser(user)
+            .map(resposta -> ResponseEntity.status(HttpStatus.OK).body(resposta))
+            .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        return userService.deleteById(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
 }

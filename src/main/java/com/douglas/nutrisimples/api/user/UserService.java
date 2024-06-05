@@ -4,40 +4,68 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.douglas.nutrisimples.domain.User;
+import com.douglas.nutrisimples.exceptions.ObjectNotFoundException;
 import com.douglas.nutrisimples.repositories.UserRepository;
-import com.douglas.nutrisimples.security.exceptions.ObjectNotFoundException;
 
-import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class UserService {
 
 	@Autowired
-	public UserRepository userRepository;
-	
-	public List<User> findAll() {
-		return userRepository.findAll();
-	}
-	
-	public User findById(Long id) {
-		Optional<User> obj = userRepository.findById(id);
-		return obj.orElseThrow(() -> new ObjectNotFoundException("Id object: " + id + " not found"));
-	}
-	
-	public User update(Long id, @Valid UserDTO objDTO) {
-		objDTO.setId(id);
-		User oldObj = findById(id);
-		oldObj = new User(objDTO);
-		return userRepository.save(oldObj);	
-	}
-	
-	public User create(UserDTO objDTO) {
-		objDTO.setId(null);
-		User newObj = new User(objDTO);
-		return userRepository.save(newObj);
-	}
+    private UserRepository repository;
 
+    @Autowired
+    private BCryptPasswordEncoder encoder;
+
+    public List<User> findAll() {
+        log.info("Listando todos os usuários");
+        return repository.findAll();
+    }
+
+    public Optional<User> findById(Long id) {
+        log.info("Buscando usuário de ID: " + id);
+        return repository.findById(id)
+            .map(Optional::of)
+            .orElseThrow(() -> new ObjectNotFoundException("Usuário não encontrado com o ID: " + id));
+    }
+
+    public Optional<User> registerUser(User user) {
+        log.info("Tentando registrar usuário com nome: " + user.getName());
+        if (repository.findByUsuario(user.getName()).isPresent()) {
+            log.warn("Usuário com nome " + user.getName() + " já existe.");
+            return Optional.empty();
+        }
+        user.setPassword(encoder.encode(user.getPassword()));
+        User savedUser = repository.save(user);
+        log.info("Usuário registrado com sucesso: " + savedUser);
+        return Optional.of(savedUser);
+    }
+
+    public Optional<User> updateUser(User user) {
+        log.info("Tentando atualizar usuário com ID: " + user.getId());
+        if (repository.findById(user.getId()).isPresent()) {
+            user.setPassword(encoder.encode(user.getPassword()));
+            User updatedUser = repository.save(user);
+            log.info("Usuário atualizado com sucesso: " + updatedUser);
+            return Optional.of(updatedUser);
+        }
+        log.warn("Usuário com ID " + user.getId() + " não encontrado.");
+        return Optional.empty();
+    }
+
+    public boolean deleteById(Long id) {
+        if (repository.findById(id).isPresent()) {
+            log.info("Deletando usuário com ID: " + id);
+            repository.deleteById(id);
+            return true;
+        }
+        log.warn("Usuário com ID " + id + " não encontrado.");
+        return false;
+    }
 }
