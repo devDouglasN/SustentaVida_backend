@@ -1,4 +1,4 @@
-package com.douglas.nutrisimples.security;
+package com.douglas.nutrisimples.infra;
 
-public record DadosTokenJWT(String token) {
+public record DataTokenJWT(String token) {
 }

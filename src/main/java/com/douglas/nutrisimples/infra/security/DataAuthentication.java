@@ -1,5 +1,4 @@
-package com.douglas.nutrisimples.security;
+package com.douglas.nutrisimples.infra.security;
 
-public record DadosAutenticacao(String login, String senha) {
-
+public record DataAuthentication(String email, String password) {
 }
