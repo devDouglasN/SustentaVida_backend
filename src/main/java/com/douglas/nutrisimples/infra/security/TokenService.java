@@ -1,4 +1,4 @@
-package com.douglas.nutrisimples.security;
+package com.douglas.nutrisimples.infra.security;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -11,6 +11,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.douglas.nutrisimples.userss.UserSS;
 
 @Service
 public class TokenService {
@@ -22,7 +23,7 @@ public class TokenService {
 		try {
 		    var algoritimo = Algorithm.HMAC256(secret);
 		    return JWT.create()
-		        .withIssuer("API Medi.pro")
+		        .withIssuer("NutriSimples")
 		        .withSubject(user.getUsername())
 		        .withExpiresAt(expirationDate())
 		        .sign(algoritimo);
@@ -35,7 +36,7 @@ public class TokenService {
 		try {
 			var algoritimo = Algorithm.HMAC256(secret);
 			return JWT.require(algoritimo)
-					.withIssuer("API Medi.pro")
+					.withIssuer("NutriSimples")
 					.build()
 					.verify(tokenJWT)
 					.getSubject();
