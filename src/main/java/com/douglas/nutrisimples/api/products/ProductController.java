@@ -6,33 +6,28 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.douglas.nutrisimples.domain.Product;
 
 @RestController
 @RequestMapping("/products")
-@CrossOrigin(origins = "", allowedHeaders = "")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ProductController {
 		
 	@Autowired
-	public ProductService productService;
+	private ProductService productService;
 	
-	public ResponseEntity<List<ProductDTO>> findall() {
+	@GetMapping("/all")
+	public ResponseEntity<List<ProductDTO>> findAll() {
 		List<Product> list = productService.findAll();
-		List<ProductDTO> listDto = list.stream().map(obj -> new ProductDTO(obj)).collect(Collectors.toList());
+		List<ProductDTO> listDto = list.stream().map(ProductDTO::new).collect(Collectors.toList());
 	    return ResponseEntity.ok().body(listDto);
 	}
 
-	@GetMapping(value = "/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<ProductDTO> findById(@PathVariable Long id) {
 		Product product = productService.findById(id);
 		return ResponseEntity.ok().body(new ProductDTO(product));
@@ -42,13 +37,17 @@ public class ProductController {
 	public ResponseEntity<ProductDTO> create(@RequestBody ProductDTO objectDTO) {
 		Product newObj = productService.create(objectDTO);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newObj.getId()).toUri();
-		return ResponseEntity.created(uri).build();
+		return ResponseEntity.created(uri).body(new ProductDTO(newObj));
 	}
 	
-	@PutMapping(value = "/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<ProductDTO> update(@PathVariable Long id, @RequestBody ProductDTO objectDTO) {
 	    Product newObj = productService.update(id, objectDTO);
 	    return ResponseEntity.ok().body(new ProductDTO(newObj));
 	}
 
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long id) {
+	    return productService.deleteById(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+	}
 }
