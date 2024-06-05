@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.douglas.nutrisimples.security.DadosAutenticacao;
-import com.douglas.nutrisimples.security.DadosTokenJWT;
-import com.douglas.nutrisimples.security.TokenService;
-import com.douglas.nutrisimples.security.UserSS;
+import com.douglas.nutrisimples.infra.DataTokenJWT;
+import com.douglas.nutrisimples.infra.security.DataAuthentication;
+import com.douglas.nutrisimples.infra.security.TokenService;
+import com.douglas.nutrisimples.userss.UserSS;
 
 import jakarta.validation.Valid;
 
@@ -27,14 +27,14 @@ public class AutenticacaoController {
 	private TokenService tokenService;
 	
 	@PostMapping
-	public ResponseEntity<DadosTokenJWT> efetuarLogin (@RequestBody @Valid DadosAutenticacao dados) {
+	public ResponseEntity<DataTokenJWT> efetuarLogin (@RequestBody @Valid DataAuthentication data) {
 		
-		var authenticationToken = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
+		var authenticationToken = new UsernamePasswordAuthenticationToken(data.email(), data.password());
 		
 		var authentication = manager.authenticate(authenticationToken);
 		var tokenJWT = tokenService.generateToken((UserSS) authentication.getPrincipal());
 		
-		return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
+		return ResponseEntity.ok(new DataTokenJWT(tokenJWT));
 	}
 	
 }
