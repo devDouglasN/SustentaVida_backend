@@ -1,4 +1,4 @@
-package com.douglas.nutrisimples.security.exceptions;
+package com.douglas.nutrisimples.exceptions;
 
 public class ObjectNotFoundException extends RuntimeException {
 	

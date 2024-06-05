@@ -51,13 +51,13 @@ public class Product {
 	
 	@ManyToOne
 	@JsonIgnoreProperties("product")
-	private Classification classification;
+	private Category category;
 	
 	public Product(ProductDTO objDTO) {
-		this.id = objDTO.getId();
-		this.name = objDTO.getName();
-		this.price = objDTO.getPrice();
-		this.amount = objDTO.getAmount();
-		this.description = objDTO.getDescription();
+		this.id = objDTO.id();
+		this.name = objDTO.name();
+		this.price = objDTO.price();
+		this.amount = objDTO.amount();
+		this.description = objDTO.description();
 	}	
 }
