@@ -1,19 +1,19 @@
-package com.douglas.nutrisimples.security;
+package com.douglas.nutrisimples.userss;
 
 import java.util.Collection;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.douglas.nutrisimples.domain.User;
 
 public class UserSS implements UserDetails {
 	private static final long serialVersionUID = 1L;
-	
+
 	private String userName;
 	private String password;
-	private List<GrantedAuthority> authorities;
 	
 	public UserSS(User user) {
 		this.userName = user.getEmail();
@@ -22,9 +22,8 @@ public class UserSS implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return authorities;
+		return List.of(new SimpleGrantedAuthority("ROLE_USER"));
 	}
-
 	@Override
 	public String getPassword() {
 		return password;
