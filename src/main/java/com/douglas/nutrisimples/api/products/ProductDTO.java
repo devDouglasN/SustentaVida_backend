@@ -28,13 +28,4 @@ public record ProductDTO(
 	    @Size(max = 200, message = "Description cannot have more than 200 characters") 
 	    String description
 	) {
-	    public ProductDTO(Product obj) {
-	        this(
-	            obj.getId(),
-	            obj.getName(),
-	            obj.getPrice(),
-	            obj.getAmount(),
-	            obj.getDescription()
-	        );
-	    }
 	}
