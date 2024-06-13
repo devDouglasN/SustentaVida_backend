@@ -1,15 +1,12 @@
 package com.douglas.nutrisimples.api.user;
 
+import java.net.URI;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.douglas.nutrisimples.domain.User;
-
-import jakarta.validation.Valid;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -20,33 +17,32 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<User>> getAll() {
+    public ResponseEntity<List<UserDTO>> getAll() {
         return ResponseEntity.ok(userService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getById(@PathVariable Long id) {
-        return userService.findById(id)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<UserDTO> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.findById(id));
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<User> postUser(@RequestBody @Valid User user) {
-        return userService.registerUser(user)
-            .map(resposta -> ResponseEntity.status(HttpStatus.CREATED).body(resposta))
-            .orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+    public ResponseEntity<UserDTO> postUser(@RequestBody UserDTO userDTO) {
+        UserDTO newUser = userService.registerUser(userDTO);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(newUser.id()).toUri();
+        return ResponseEntity.created(uri).body(newUser);
     }
 
-    @PutMapping("/atualizar")
-    public ResponseEntity<User> putUser(@Valid @RequestBody User user) {
-        return userService.updateUser(user)
-            .map(resposta -> ResponseEntity.status(HttpStatus.OK).body(resposta))
-            .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    @PutMapping("/atualizar/{id}")
+    public ResponseEntity<UserDTO> putUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
+        UserDTO updatedUser = userService.updateUser(id, userDTO);
+        return ResponseEntity.ok().body(updatedUser);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        return userService.deleteById(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+        userService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

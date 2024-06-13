@@ -1,7 +1,7 @@
 package com.douglas.nutrisimples.api.user;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.douglas.nutrisimples.domain.User;
 import com.douglas.nutrisimples.exceptions.ObjectNotFoundException;
-import com.douglas.nutrisimples.repositories.UserRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,55 +16,60 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class UserService {
 
-	@Autowired
+    @Autowired
     private UserRepository repository;
 
     @Autowired
     private BCryptPasswordEncoder encoder;
 
-    public List<User> findAll() {
+    public List<UserDTO> findAll() {
         log.info("Listando todos os usuários");
-        return repository.findAll();
+        return repository.findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
-    public Optional<User> findById(Long id) {
+    public UserDTO findById(Long id) {
         log.info("Buscando usuário de ID: " + id);
-        return repository.findById(id)
-            .map(Optional::of)
-            .orElseThrow(() -> new ObjectNotFoundException("Usuário não encontrado com o ID: " + id));
+        User user = repository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Usuário não encontrado com o ID: " + id));
+        return mapToDTO(user);
     }
 
-    public Optional<User> registerUser(User user) {
-        log.info("Tentando registrar usuário com nome: " + user.getName());
-        if (repository.findByUsuario(user.getName()).isPresent()) {
-            log.warn("Usuário com nome " + user.getName() + " já existe.");
-            return Optional.empty();
+    public UserDTO registerUser(UserDTO userDTO) {
+        log.info("Tentando registrar usuário com nome: " + userDTO.name());
+        if (repository.findByEmail(userDTO.email()).isPresent()) {
+            log.warn("Usuário com email " + userDTO.email() + " já existe.");
+            throw new ObjectNotFoundException("Usuário com email " + userDTO.email() + " já existe.");
         }
-        user.setPassword(encoder.encode(user.getPassword()));
+        User user = new User(null, userDTO.name(), userDTO.email(), encoder.encode(userDTO.password()));
         User savedUser = repository.save(user);
         log.info("Usuário registrado com sucesso: " + savedUser);
-        return Optional.of(savedUser);
+        return mapToDTO(savedUser);
     }
 
-    public Optional<User> updateUser(User user) {
-        log.info("Tentando atualizar usuário com ID: " + user.getId());
-        if (repository.findById(user.getId()).isPresent()) {
-            user.setPassword(encoder.encode(user.getPassword()));
-            User updatedUser = repository.save(user);
-            log.info("Usuário atualizado com sucesso: " + updatedUser);
-            return Optional.of(updatedUser);
-        }
-        log.warn("Usuário com ID " + user.getId() + " não encontrado.");
-        return Optional.empty();
+    public UserDTO updateUser(Long id, UserDTO userDTO) {
+        log.info("Tentando atualizar usuário com ID: " + id);
+        User user = repository.findById(id).map(existingUser -> {
+            existingUser.setName(userDTO.name());
+            existingUser.setEmail(userDTO.email());
+            existingUser.setPassword(encoder.encode(userDTO.password()));
+            return repository.save(existingUser);
+        }).orElseThrow(() -> new ObjectNotFoundException("Usuário não encontrado com o ID: " + id));
+        return mapToDTO(user);
     }
 
-    public boolean deleteById(Long id) {
-        if (repository.findById(id).isPresent()) {
-            log.info("Deletando usuário com ID: " + id);
-            repository.deleteById(id);
-            return true;
+    public void deleteById(Long id) {
+        log.info("Deletando usuário com ID: " + id);
+        if (!repository.existsById(id)) {
+            log.warn("Usuário com ID " + id + " não encontrado.");
+            throw new ObjectNotFoundException("Usuário não encontrado com o ID: " + id);
         }
-        log.warn("Usuário com ID " + id + " não encontrado.");
-        return false;
+        repository.deleteById(id);
+        log.info("Usuário deletado com sucesso.");
+    }
+
+    private UserDTO mapToDTO(User user) {
+        return new UserDTO(user.getId(), user.getName(), user.getEmail(), null);
     }
 }
