@@ -1,12 +1,9 @@
 package com.douglas.nutrisimples.domain;
 
-import com.douglas.nutrisimples.api.user.UserDTO;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -15,13 +12,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 @EqualsAndHashCode(of = "id")
-@Table(name = "tb_usuarios")
+@Entity
 public class User {
 
 	@Id
@@ -36,12 +33,5 @@ public class User {
 	@Size(min = 6, max = 50)
 	private String email;
 	private String password;
-	
-	public User(UserDTO objDTO) {
-		this.id = objDTO.getId();
-		this.name = objDTO.getName();
-		this.email = objDTO.getEmail();
-		this.password = objDTO.getPassword();
-	}
-		
+
 }
