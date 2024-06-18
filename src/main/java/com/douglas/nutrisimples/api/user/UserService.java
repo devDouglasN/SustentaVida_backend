@@ -37,32 +37,31 @@ public class UserService {
     }
 
     public UserDTO registerUser(UserDTO userDTO) {
-        log.info("Tentando registrar usuário com nome: " + userDTO.name());
-        if (repository.findByEmail(userDTO.email()).isPresent()) {
-            log.warn("Usuário com email " + userDTO.email() + " já existe.");
+        log.info("Registrando novo usuário: " + userDTO.name());
+        repository.findByEmail(userDTO.email()).ifPresent(existingUser -> {
             throw new ObjectNotFoundException("Usuário com email " + userDTO.email() + " já existe.");
-        }
+        });
         User user = new User(null, userDTO.name(), userDTO.email(), encoder.encode(userDTO.password()));
-        User savedUser = repository.save(user);
-        log.info("Usuário registrado com sucesso: " + savedUser);
-        return mapToDTO(savedUser);
+        user = repository.save(user);
+        log.info("Usuário registrado com sucesso: " + user);
+        return mapToDTO(user);
     }
 
     public UserDTO updateUser(Long id, UserDTO userDTO) {
-        log.info("Tentando atualizar usuário com ID: " + id);
-        User user = repository.findById(id).map(existingUser -> {
-            existingUser.setName(userDTO.name());
-            existingUser.setEmail(userDTO.email());
-            existingUser.setPassword(encoder.encode(userDTO.password()));
-            return repository.save(existingUser);
-        }).orElseThrow(() -> new ObjectNotFoundException("Usuário não encontrado com o ID: " + id));
+        log.info("Atualizando usuário de ID: " + id);
+        User user = repository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Usuário não encontrado com o ID: " + id));
+        user.setName(userDTO.name());
+        user.setEmail(userDTO.email());
+        user.setPassword(encoder.encode(userDTO.password()));
+        user = repository.save(user);
+        log.info("Usuário atualizado com sucesso: " + user);
         return mapToDTO(user);
     }
 
     public void deleteById(Long id) {
         log.info("Deletando usuário com ID: " + id);
         if (!repository.existsById(id)) {
-            log.warn("Usuário com ID " + id + " não encontrado.");
             throw new ObjectNotFoundException("Usuário não encontrado com o ID: " + id);
         }
         repository.deleteById(id);
