@@ -26,10 +26,8 @@ public class AuthenticationService implements UserDetailsService {
 		Optional<User> user = userRepository.findByEmail(email);
 		List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
 
-		if(user.isPresent()) {
-			return new UserSS(user.get().getId(), user.get().getEmail(), user.get().getPassword(), authorities);
-		}
-		throw new UsernameNotFoundException("Usuário não encontrado com e-mail: " + email);
+		return user.map(value -> new UserSS(value.getId(), value.getEmail(), value.getPassword(), authorities))
+				.orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com e-mail: " + email));
 	}
 
 }
