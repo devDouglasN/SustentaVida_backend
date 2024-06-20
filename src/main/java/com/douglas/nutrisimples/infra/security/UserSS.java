@@ -1,4 +1,4 @@
-package com.douglas.nutrisimples.userss;
+package com.douglas.nutrisimples.infra.security;
 
 import java.io.Serial;
 import java.util.Collection;

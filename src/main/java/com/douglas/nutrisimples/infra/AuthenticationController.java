@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.douglas.nutrisimples.infra.security.DataAuthentication;
 import com.douglas.nutrisimples.infra.security.TokenService;
-import com.douglas.nutrisimples.userss.UserSS;
+import com.douglas.nutrisimples.infra.security.UserSS;
 
 import jakarta.validation.Valid;
 

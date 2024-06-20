@@ -1,6 +1,7 @@
 package com.douglas.nutrisimples.api.user;
 
 import com.douglas.nutrisimples.domain.User;
+import com.douglas.nutrisimples.infra.security.UserSS;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
