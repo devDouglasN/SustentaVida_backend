@@ -11,7 +11,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.douglas.nutrisimples.userss.UserSS;
 
 @Service
 public class TokenService {
@@ -22,11 +21,14 @@ public class TokenService {
 	public String generateToken(UserSS user) {
 		try {
 		    var algoritimo = Algorithm.HMAC256(secret);
-		    return JWT.create()
+		    String token = JWT.create()
 		        .withIssuer("NutriSimples")
 		        .withSubject(user.getUsername())
 		        .withExpiresAt(expirationDate())
 		        .sign(algoritimo);
+
+			return token;
+
 		} catch (JWTCreationException exception){
 			throw new RuntimeException("erro ao gerar token jwt", exception);
 		}
