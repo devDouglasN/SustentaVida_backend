@@ -44,15 +44,14 @@ public class SecurityFilter extends OncePerRequestFilter {
 				var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			} catch (Exception e) {
-
 				log.error("Authentication error: " + e.getMessage(), e);
-
 				SecurityContextHolder.clearContext();
 			}
 		}
 
 		filterChain.doFilter(request, response);
 	}
+
 
 
 	private String recuperarToken(HttpServletRequest request) {

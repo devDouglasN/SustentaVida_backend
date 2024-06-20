@@ -54,6 +54,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         List<Product> products = Arrays.asList(product1, product2, product3, product4, product5, product6, product7, product8, product9, product10);
         productRepository.saveAll(products);
 
+        User user = new User(null, "Douglas Nascimento", "douglas.nascimento@mail.com", passwordEncoder.encode("123456"));
         User user1 = new User(null, "Ana Silva", "ana.silva@mail.com", passwordEncoder.encode("123"));
         User user2 = new User(null, "Carlos Pereira", "carlos.pereira@mail.com", passwordEncoder.encode("senha123"));
         User user3 = new User(null, "Mariana Costa", "mariana.costa@mail.com", passwordEncoder.encode("senha123"));
@@ -65,7 +66,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         User user9 = new User(null, "Laura Santos", "laura.santos@mail.com", passwordEncoder.encode("senha123"));
         User user10 = new User(null, "Pedro Almeida", "pedro.almeida@mail.com", passwordEncoder.encode("senha123"));
 
-        List<User> users = Arrays.asList(user1, user2, user3, user4, user5, user6, user7, user8, user9, user10);
+        List<User> users = Arrays.asList(user, user1, user2, user3, user4, user5, user6, user7, user8, user9, user10);
         userRepository.saveAll(users);
     }
 }
